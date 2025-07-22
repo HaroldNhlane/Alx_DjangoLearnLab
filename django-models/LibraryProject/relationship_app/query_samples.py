@@ -4,7 +4,7 @@ import os
 import django
 
 # Set up Django environment
-# IMPORTANT: Replace 'your_project_name' with the actual name of your project's main directory
+# IMPORTANT: Replace 'your_project_name' with the actual name of your Django project's main directory
 # For example, if your project folder is 'LibraryProject', it should be 'LibraryProject.settings'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
 django.setup()
@@ -12,92 +12,74 @@ django.setup()
 # Now import your models
 from relationship_app.models import Author, Book, Library, Librarian
 
-print("--- Sample Queries ---")
+print("--- Starting Sample Queries ---")
 
-# --- IMPORTANT: Ensure you have sample data in your database first! ---
-# You can add data via the Django Admin (http://127.0.0.1:8000/admin/)
-# or by uncommenting and running the data creation below once, then re-commenting.
+# --- Reminder: Ensure you have sample data in your database first! ---
+# Use the Django Admin (http://127.0.0.1:8000/admin/) to add authors, books, libraries, and librarians.
+# Make sure the names below match the data you've entered.
 
-# Example data creation (uncomment, run once, then re-comment or remove)
-# try:
-#     author1, created = Author.objects.get_or_create(name="Jane Austen")
-#     author2, created = Author.objects.get_or_create(name="J.R.R. Tolkien")
-#     author3, created = Author.objects.get_or_create(name="Harper Lee")
-
-#     book1, created = Book.objects.get_or_create(title="Pride and Prejudice", author=author1)
-#     book2, created = Book.objects.get_or_create(title="Sense and Sensibility", author=author1)
-#     book3, created = Book.objects.get_or_create(title="The Hobbit", author=author2)
-#     book4, created = Book.objects.get_or_create(title="To Kill a Mockingbird", author=author3)
-
-#     library1, created = Library.objects.get_or_create(name="Central City Library")
-#     library2, created = Library.objects.get_or_create(name="University Archives")
-
-#     if created: # Only add books to libraries if they were just created to avoid duplicates on re-run
-#         library1.books.add(book1, book2, book3)
-#         library2.books.add(book3, book4)
-
-#     librarian1, created = Librarian.objects.get_or_create(name="Alice Librarian", library=library1)
-#     librarian2, created = Librarian.objects.get_or_create(name="Bob Bookshelf", library=library2)
-
-#     print("\nSample data ensured/created.")
-# except Exception as e:
-#     print(f"\nError creating sample data: {e}. Please ensure migrations are applied and models are correct.")
-
-
-# --- Query 1: Query all books by a specific author (ForeignKey relationship) ---
-# Let's try to get books by 'Jane Austen' (or an author you've created)
+# Query 1: Query all books by a specific author (ForeignKey relationship)
 print("\n--- Query: Books by a specific author ---")
 try:
-    target_author_name = "Jane Austen" # Change this to an author name you've added
-    author = Author.objects.get(name=target_author_name)
-    books_by_author = author.book_set.all() # Use the reverse relationship manager (lowercase model name + _set)
+    # Use an author name that you've added in the Django Admin
+    target_author_name = "Jane Austen"
+    author_instance = Author.objects.get(name=target_author_name)
+    
+    # Access related books using the reverse relationship manager (model_name_set)
+    books_by_author = author_instance.book_set.all() 
 
-    print(f"Books by '{author.name}':")
+    print(f"Books by '{author_instance.name}':")
     if books_by_author.exists():
         for book in books_by_author:
             print(f"- {book.title}")
     else:
-        print(f"No books found for '{author.name}'.")
+        print(f"No books found for '{author_instance.name}'.")
 except Author.DoesNotExist:
-    print(f"Author '{target_author_name}' not found. Please add this author in the admin or ensure the name matches.")
+    print(f"Error: Author '{target_author_name}' not found. Please ensure this author is added in your Django Admin.")
 except Exception as e:
-    print(f"An error occurred: {e}")
+    print(f"An unexpected error occurred for Query 1: {e}")
 
-# --- Query 2: List all books in a library (ManyToMany relationship) ---
-# Let's try to get books from 'Central City Library' (or a library you've created)
+
+# Query 2: List all books in a library (ManyToMany relationship)
 print("\n--- Query: Books in a specific library ---")
 try:
-    target_library_name = "Central City Library" # Change this to a library name you've added
-    library = Library.objects.get(name=target_library_name)
-    books_in_library = library.books.all() # Access the ManyToMany related objects directly
+    # Use a library name that you've added in the Django Admin
+    target_library_name = "Central City Library"
+    library_instance = Library.objects.get(name=target_library_name)
+    
+    # Access related books directly via the ManyToMany field
+    books_in_library = library_instance.books.all() 
 
-    print(f"Books in '{library.name}':")
+    print(f"Books in '{library_instance.name}':")
     if books_in_library.exists():
         for book in books_in_library:
-            print(f"- {book.title} by {book.author.name}") # We can even get the author here!
+            # For each book, you can also access its author via the ForeignKey
+            print(f"- {book.title} by {book.author.name}") 
     else:
-        print(f"No books found in '{library.name}'.")
+        print(f"No books found in '{library_instance.name}'.")
 except Library.DoesNotExist:
-    print(f"Library '{target_library_name}' not found. Please add this library in the admin or ensure the name matches.")
+    print(f"Error: Library '{target_library_name}' not found. Please ensure this library is added in your Django Admin.")
 except Exception as e:
-    print(f"An error occurred: {e}")
+    print(f"An unexpected error occurred for Query 2: {e}")
 
-# --- Query 3: Retrieve the librarian for a library (OneToOneField relationship) ---
-# Let's try to get the librarian for 'University Archives' (or a library you've created)
+
+# Query 3: Retrieve the librarian for a library (OneToOneField relationship)
 print("\n--- Query: Librarian for a specific library ---")
 try:
-    target_library_name = "University Archives" # Change this to a library name you've added
-    library = Library.objects.get(name=target_library_name)
-    librarian = library.librarian # Access the OneToOne related object directly
+    # Use a library name that you've added in the Django Admin
+    target_library_name = "University Archives"
+    library_instance = Library.objects.get(name=target_library_name)
+    
+    # Access the related librarian directly via the OneToOne field
+    librarian_instance = library_instance.librarian 
 
-    print(f"Librarian for '{library.name}':")
-    print(f"- {librarian.name}")
+    print(f"Librarian for '{library_instance.name}':")
+    print(f"- {librarian_instance.name}")
 except Library.DoesNotExist:
-    print(f"Library '{target_library_name}' not found. Please add this library in the admin or ensure the name matches.")
-except Librarian.DoesNotExist: # This handles the case where a Library exists but no Librarian is linked via OneToOne
-    print(f"No librarian found for '{target_library_name}'.")
+    print(f"Error: Library '{target_library_name}' not found. Please ensure this library is added in your Django Admin.")
+except Librarian.DoesNotExist:
+    print(f"Error: No librarian is linked to '{target_library_name}'. Please link a librarian in the Django Admin.")
 except Exception as e:
-    print(f"An error occurred: {e}")
-
+    print(f"An unexpected error occurred for Query 3: {e}")
 
 print("\n--- End of Sample Queries ---")
