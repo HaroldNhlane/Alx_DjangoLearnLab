@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+# CHANGE THIS LINE: Use the more specific import path for DetailView
+from django.views.generic.detail import DetailView
 
-# CHANGE THESE LINES: Separate imports to match checker's exact string requirement
+# Separate imports for models as previously discussed
 from .models import Book
-from .models import Library # This exact line is what the checker wants
+from .models import Library
 from .models import Author
 
 def book_list(request):
@@ -15,7 +16,6 @@ def book_list(request):
     context = {
         'books': books
     }
-    # Using the explicit app-prefixed template path as previously discussed
     return render(request, 'relationship_app/list_books.html', context)
 
 class LibraryDetailView(DetailView):
