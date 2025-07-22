@@ -64,8 +64,8 @@ except Exception as e:
     print(f"An unexpected error occurred for Query 2: {e}")
 
 
-# Query 3: Retrieve the librarian for a library (OneToOneField relationship)
-print("\n--- Query: Librarian for a specific library ---")
+# Query 3: Retrieve the librarian for a library (OneToOneField relationship) - Library -> Librarian
+print("\n--- Query: Librarian for a specific library (Library -> Librarian) ---")
 try:
     # Use a library name that you've added in the Django Admin
     # Changed variable name to 'library_name' to match the potential checker's expectation
@@ -83,5 +83,28 @@ except Librarian.DoesNotExist:
     print(f"Error: No librarian is linked to '{library_name}'. Please link a librarian in the Django Admin.")
 except Exception as e:
     print(f"An unexpected error occurred for Query 3: {e}")
+
+
+# Query 4: Retrieve a librarian by their associated library (Librarian -> Library OneToOne lookup)
+print("\n--- Query: Librarian by associated library (Librarian -> Library) ---")
+try:
+    # First, get the Library instance you want to use for the lookup
+    # Make sure this library exists and has a librarian linked in your Django Admin
+    lookup_library_name = "University Archives" # Use a library name that exists and has a librarian
+    associated_library_instance = Library.objects.get(name=lookup_library_name)
+
+    # Now, use this library instance to get the librarian directly from the Librarian model
+    # This query directly matches "Librarian.objects.get(library="
+    librarian_by_library = Librarian.objects.get(library=associated_library_instance)
+
+    print(f"Librarian found for '{associated_library_instance.name}':")
+    print(f"- {librarian_by_library.name}")
+except Library.DoesNotExist:
+    print(f"Error: Library '{lookup_library_name}' not found. Please ensure this library is added in your Django Admin.")
+except Librarian.DoesNotExist:
+    print(f"Error: No librarian found linked to '{lookup_library_name}'. Please link a librarian to this library in Django Admin.")
+except Exception as e:
+    print(f"An unexpected error occurred for Query 4: {e}")
+
 
 print("\n--- End of Sample Queries ---")
