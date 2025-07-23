@@ -4,15 +4,34 @@ from django.contrib import messages
 from django.contrib.auth import login # This import is required
 from django.contrib.auth.forms import UserCreationForm # This import is also required
 from django.contrib.auth.views import LoginView, LogoutView # For consistency and use in urls.py
+# --- NEW IMPORTS FOR RBAC ---
+from django.contrib.auth.decorators import user_passes_test # Required for @user_passes_test
+from .models import UserProfile # Required to check user roles from UserProfile
 # --- END: ESSENTIAL IMPORTS ---
 
 from django.views.generic.detail import DetailView
 
-from .models import Book
-from .models import Library
-from .models import Author
+from .models import Book # Existing model import
+from .models import Library # Existing model import
+from .models import Author # Existing model import
 
 from .forms import UserRegisterForm # Your custom registration form
+
+
+# Helper functions for role-based access
+# --- NEW CODE: ROLE CHECKER FUNCTIONS ---
+def is_admin(user):
+    """Checks if the user has the 'Admin' role in their UserProfile."""
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    """Checks if the user has the 'Librarian' role in their UserProfile."""
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    """Checks if the user has the 'Member' role in their UserProfile."""
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+# --- END NEW CODE ---
 
 
 # Existing function-based view to list all books
@@ -57,3 +76,10 @@ def register(request):
     else:
         form = UserRegisterForm() # Display a blank form for GET requests
     return render(request, 'relationship_app/register.html', {'form': form})
+
+# --- NEW CODE: ADMIN VIEW ---
+@user_passes_test(is_admin, login_url='/relationship_app/login/') # Redirect to login if not admin
+def admin_view(request):
+    """View accessible only to Admin users."""
+    return render(request, 'relationship_app/admin_view.html', {'message': 'Welcome, Admin!'})
+# --- END NEW CODE ---
