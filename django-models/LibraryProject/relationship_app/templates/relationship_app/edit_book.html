@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+</head>
+<body>
+    <h1>Edit Book: {{ book.title }}</h1>
+    <p>{{ message }}</p>
+    <p>This page allows users with 'can_change_book' permission to edit books.</p>
+    <p><a href="{% url 'relationship_app:book_list' %}">Back to Book List</a></p>
+    <p><a href="{% url 'relationship_app:logout' %}">Logout</a></p>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Book</title>
+</head>
+<body>
+    <h1>Add New Book</h1>
+    <p>{{ message }}</p>
+    <p>This page allows users with 'can_add_book' permission to add books.</p>
+    <p><a href="{% url 'relationship_app:book_list' %}">Back to Book List</a></p>
+    <p><a href="{% url 'relationship_app:logout' %}">Logout</a></p>
+</body>
+</html>
