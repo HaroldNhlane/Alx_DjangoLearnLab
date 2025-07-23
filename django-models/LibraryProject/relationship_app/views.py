@@ -1,14 +1,17 @@
-from django.shortcuts import render, redirect, get_object_or_404 # Added get_object_or_404
+# LibraryProject/relationship_app/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
-# --- Updated Import: Added permission_required ---
 from django.contrib.auth.decorators import user_passes_test, permission_required
-from .models import UserProfile, Book # Ensure Book model is imported
+# --- ADD THIS LINE ---
+from django.views.generic.detail import DetailView # <-- ADD THIS IMPORT
+
+from .models import UserProfile, Book
 from .models import Library
 from .models import Author
-
 
 # Helper functions for role-based access
 def is_admin(user):
