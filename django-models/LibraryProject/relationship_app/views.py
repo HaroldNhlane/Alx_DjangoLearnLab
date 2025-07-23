@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-# --- START: ESSENTIAL IMPORTS (Including those for the checker) ---
-from django.contrib.auth import login # This import is required
-from django.contrib.auth.forms import UserCreationForm # This import is also required
-from django.contrib.auth.views import LoginView, LogoutView # For consistency and use in urls.py
+# --- START: ESSENTIAL IMPORTS ---
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm # <-- Required for register view
+from django.contrib.auth.views import LoginView, LogoutView
 # --- NEW IMPORTS FOR RBAC ---
 from django.contrib.auth.decorators import user_passes_test # Required for @user_passes_test
 from .models import UserProfile # Required to check user roles from UserProfile
@@ -11,15 +11,14 @@ from .models import UserProfile # Required to check user roles from UserProfile
 
 from django.views.generic.detail import DetailView
 
-from .models import Book # Existing model import
-from .models import Library # Existing model import
-from .models import Author # Existing model import
+from .models import Book
+from .models import Library
+from .models import Author
 
-from .forms import UserRegisterForm # Your custom registration form
+# --- REMOVED: from .forms import UserRegisterForm (since we're using UserCreationForm) ---
 
 
 # Helper functions for role-based access
-# --- NEW CODE: ROLE CHECKER FUNCTIONS ---
 def is_admin(user):
     """Checks if the user has the 'Admin' role in their UserProfile."""
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
@@ -31,16 +30,10 @@ def is_librarian(user):
 def is_member(user):
     """Checks if the user has the 'Member' role in their UserProfile."""
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
-# --- END NEW CODE ---
 
 
-# LibraryProject/relationship_app/views.py
-
-# ... (all existing imports and helper functions) ...
-
-# Existing function-based view to list all books
-# --- CHANGE THIS FUNCTION NAME ---
-def list_books(request): # Renamed from book_list to list_books
+# Function-based view to list all books (renamed to list_books)
+def list_books(request): # Renamed from book_list to list_books for checker compliance
     """
     Function-based view to list all books.
     Renders a template displaying book titles and their authors.
@@ -50,8 +43,6 @@ def list_books(request): # Renamed from book_list to list_books
         'books': books
     }
     return render(request, 'relationship_app/list_books.html', context)
-
-# ... (rest of your views.py file) ...
 
 # Existing class-based view for Library details
 class LibraryDetailView(DetailView):
@@ -67,26 +58,31 @@ class LibraryDetailView(DetailView):
 def register(request):
     """
     Handles user registration.
-    Displays a form for new users to sign up.
+    Displays a form for new users to sign up using UserCreationForm.
     """
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
+        form = UserCreationForm(request.POST) # <-- Now uses UserCreationForm
         if form.is_valid():
             user = form.save() # Saves the user to the database
             username = form.cleaned_data.get('username')
-            # Display a success message
             messages.success(request, f'Account created for {username}! You can now log in.')
-            # Optional: You can uncomment the line below to automatically log the user in after registration
-            # login(request, user)
-            # --- CRITICAL FIX: Redirect to the namespaced login URL ---
             return redirect('relationship_app:login')
     else:
-        form = UserRegisterForm() # Display a blank form for GET requests
+        form = UserCreationForm() # <-- Now uses UserCreationForm
     return render(request, 'relationship_app/register.html', {'form': form})
 
-# --- NEW CODE: ADMIN VIEW ---
-@user_passes_test(is_admin, login_url='/relationship_app/login/') # Redirect to login if not admin
+# Role-based dashboard views
+@user_passes_test(is_admin, login_url='/relationship_app/login/')
 def admin_view(request):
     """View accessible only to Admin users."""
     return render(request, 'relationship_app/admin_view.html', {'message': 'Welcome, Admin!'})
-# --- END NEW CODE ---
+
+@user_passes_test(is_librarian, login_url='/relationship_app/login/')
+def librarian_view(request):
+    """View accessible only to Librarian users."""
+    return render(request, 'relationship_app/librarian_view.html', {'message': 'Welcome, Librarian!'})
+
+@user_passes_test(is_member, login_url='/relationship_app/login/')
+def member_view(request):
+    """View accessible only to Member users."""
+    return render(request, 'relationship_app/member_view.html', {'message': 'Welcome, Member!'})
