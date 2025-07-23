@@ -27,4 +27,10 @@ urlpatterns = [
     path('admin_dashboard/', views.admin_view, name='admin_dashboard'),
     path('librarian_dashboard/', views.librarian_view, name='librarian_dashboard'),
     path('member_dashboard/', views.member_view, name='member_dashboard'),
+
+    # --- NEW CODE: URL patterns for permission-controlled views ---
+    path('books/add/', views.add_book, name='add_book'),
+    path('books/<int:pk>/edit/', views.edit_book, name='edit_book'),
+    path('books/<int:pk>/delete/', views.delete_book, name='delete_book'),
+    # --- END NEW CODE ---
 ]
