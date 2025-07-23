@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import book_list, register
-# Import specific authentication views from Django
-from django.contrib.auth import views as auth_views # This alias is important
+# --- START: ESSENTIAL IMPORT FOR VIEWS ---
+from .views import book_list, register # <<< ENSURE THIS LINE IS PRESENT AND CORRECT
+# --- END: ESSENTIAL IMPORT FOR VIEWS ---
+from django.contrib.auth import views as auth_views
 
 from .views import LibraryDetailView
 
@@ -14,10 +15,10 @@ urlpatterns = [
 
     # NEW: Authentication URL Patterns
     # Registration view
+    # <<< ENSURE 'register' IS USED HERE >>>
     path('register/', register, name='register'),
 
     # Login view (uses Django's built-in LoginView)
-    # >>> ENSURE THIS LINE IS PRESENT EXACTLY AS SHOWN <<<
     path('login/', auth_views.LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
 
     # Logout view (uses Django's built-in LogoutView)
