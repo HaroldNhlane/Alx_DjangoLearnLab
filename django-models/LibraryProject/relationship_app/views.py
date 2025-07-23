@@ -34,8 +34,13 @@ def is_member(user):
 # --- END NEW CODE ---
 
 
+# LibraryProject/relationship_app/views.py
+
+# ... (all existing imports and helper functions) ...
+
 # Existing function-based view to list all books
-def list_books(request):
+# --- CHANGE THIS FUNCTION NAME ---
+def list_books(request): # Renamed from book_list to list_books
     """
     Function-based view to list all books.
     Renders a template displaying book titles and their authors.
@@ -45,6 +50,8 @@ def list_books(request):
         'books': books
     }
     return render(request, 'relationship_app/list_books.html', context)
+
+# ... (rest of your views.py file) ...
 
 # Existing class-based view for Library details
 class LibraryDetailView(DetailView):
