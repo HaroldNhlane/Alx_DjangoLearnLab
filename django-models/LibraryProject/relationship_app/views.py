@@ -50,7 +50,7 @@ def register(request):
             form.save() # Saves the user to the database
             username = form.cleaned_data.get('username')
             # Display a success message
-            messages.success(request, f'Account created for {username}! You can now log in.')
+            return redirect('relationship_app:login') # CORRECTED: Use namespaced URL
             return redirect('login') # Redirect to the login page (name defined in urls.py)
     else:
         form = UserRegisterForm() # Display a blank form for GET requests
