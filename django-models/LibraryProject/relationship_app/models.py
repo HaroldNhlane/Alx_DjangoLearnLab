@@ -30,6 +30,35 @@ class Library(models.Model):
 
     def __str__(self):
         return self.name
+    
+    # LibraryProject/relationship_app/models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+
+# ... (Your existing Author, Book, Library models) ...
+
+# --- NEW/RE-ADDED CODE: Librarian Model (for checker) ---
+class Librarian(models.Model):
+    name = models.CharField(max_length=100)
+    # This links a Librarian to a Library. Add null=True, blank=True for flexibility.
+    library = models.OneToOneField('Library', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+# --- Your existing UserProfile Model ---
+class UserProfile(models.Model):
+    ROLE_CHOICES = (
+        ('Admin', 'Admin'),
+        ('Librarian', 'Librarian'),
+        ('Member', 'Member'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Member')
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile ({self.role})"
 
 # --- NEW CODE: UserProfile Model ---
 class UserProfile(models.Model):
