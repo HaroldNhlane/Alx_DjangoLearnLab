@@ -1,10 +1,12 @@
-# relationship_app/admin.py
+# LibraryProject/relationship_app/admin.py
 
 from django.contrib import admin
-from .models import Author, Book, Library, Librarian # Import all your models!
+# --- CORRECTED LINE: Removed Librarian, Added UserProfile ---
+from .models import Author, Book, Library, UserProfile
 
 # Register your models here.
 admin.site.register(Author)
 admin.site.register(Book)
 admin.site.register(Library)
-admin.site.register(Librarian)
+# --- NEW LINE: Register UserProfile for admin interface ---
+admin.site.register(UserProfile)
