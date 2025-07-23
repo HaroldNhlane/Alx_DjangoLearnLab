@@ -61,6 +61,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',  # Add this line back
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -123,3 +124,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+
+# ... (rest of your settings)
+
+# Django Authentication System Settings
+LOGIN_REDIRECT_URL = 'relationship_app:book_list' # Redirect to the book list after successful login
+LOGOUT_REDIRECT_URL = 'login' # Redirect to the login page after logout (or 'home' if you have one)
+LOGIN_URL = 'login' # Specifies the URL for the login page
