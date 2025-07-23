@@ -1,21 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404 # Added get_object_or_404
 from django.contrib import messages
-# --- START: ESSENTIAL IMPORTS ---
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm # <-- Required for register view
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
-# --- NEW IMPORTS FOR RBAC ---
-from django.contrib.auth.decorators import user_passes_test # Required for @user_passes_test
-from .models import UserProfile # Required to check user roles from UserProfile
-# --- END: ESSENTIAL IMPORTS ---
-
-from django.views.generic.detail import DetailView
-
-from .models import Book
+# --- Updated Import: Added permission_required ---
+from django.contrib.auth.decorators import user_passes_test, permission_required
+from .models import UserProfile, Book # Ensure Book model is imported
 from .models import Library
 from .models import Author
-
-# --- REMOVED: from .forms import UserRegisterForm (since we're using UserCreationForm) ---
 
 
 # Helper functions for role-based access
@@ -33,7 +25,7 @@ def is_member(user):
 
 
 # Function-based view to list all books (renamed to list_books)
-def list_books(request): # Renamed from book_list to list_books for checker compliance
+def list_books(request):
     """
     Function-based view to list all books.
     Renders a template displaying book titles and their authors.
@@ -61,14 +53,14 @@ def register(request):
     Displays a form for new users to sign up using UserCreationForm.
     """
     if request.method == 'POST':
-        form = UserCreationForm(request.POST) # <-- Now uses UserCreationForm
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save() # Saves the user to the database
+            user = form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}! You can now log in.')
             return redirect('relationship_app:login')
     else:
-        form = UserCreationForm() # <-- Now uses UserCreationForm
+        form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
 # Role-based dashboard views
@@ -86,3 +78,31 @@ def librarian_view(request):
 def member_view(request):
     """View accessible only to Member users."""
     return render(request, 'relationship_app/member_view.html', {'message': 'Welcome, Member!'})
+
+
+# --- NEW CODE: Views with permission_required decorator ---
+@permission_required('relationship_app.can_add_book', login_url='/relationship_app/login/')
+def add_book(request):
+    # This is a placeholder. You'll integrate a form here later.
+    if request.method == 'POST':
+        messages.success(request, "Book added successfully (placeholder)!")
+        return redirect('relationship_app:book_list')
+    return render(request, 'relationship_app/add_book.html', {'message': 'You have permission to add a book.'})
+
+@permission_required('relationship_app.can_change_book', login_url='/relationship_app/login/')
+def edit_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    # This is a placeholder. You'll integrate a form here later.
+    if request.method == 'POST':
+        messages.success(request, f"Book '{book.title}' edited successfully (placeholder)!")
+        return redirect('relationship_app:book_list')
+    return render(request, 'relationship_app/edit_book.html', {'book': book, 'message': f'You have permission to edit {book.title}.'})
+
+@permission_required('relationship_app.can_delete_book', login_url='/relationship_app/login/')
+def delete_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        book.delete()
+        messages.success(request, f"Book '{book.title}' deleted successfully!")
+        return redirect('relationship_app:book_list')
+    return render(request, 'relationship_app/delete_book_confirm.html', {'book': book, 'message': f'Are you sure you want to delete {book.title}?'})
