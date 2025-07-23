@@ -35,7 +35,7 @@ def is_member(user):
 
 
 # Existing function-based view to list all books
-def book_list(request):
+def list_books(request):
     """
     Function-based view to list all books.
     Renders a template displaying book titles and their authors.
