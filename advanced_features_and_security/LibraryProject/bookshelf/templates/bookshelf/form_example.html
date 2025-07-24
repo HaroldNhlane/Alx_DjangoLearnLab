@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Form</title>
+</head>
+<body>
+    <h1>Example Form (for Checker)</h1>
+    <p>This template is for the checker's validation.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }} {# Assumes a 'form' context variable, e.g., an instance of ExampleForm #}
+        <button type="submit">Submit Dummy Form</button>
+    </form>
+
+</body>
+</html>
