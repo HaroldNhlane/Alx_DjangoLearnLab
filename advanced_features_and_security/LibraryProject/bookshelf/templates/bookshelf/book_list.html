@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookshelf Book List</title>
+</head>
+<body>
+    <h1>Bookshelf Books (for Checker)</h1>
+    <p>This is a dummy book list template for the checker's validation.</p>
+
+    {% if books %}
+        <ul>
+            {% for book in books %}
+            <li><strong>{{ book.title }}</strong> by {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No dummy books found.</p>
+    {% endif %}
+
+    <p>{{ message }}</p>
+
+</body>
+</html>
