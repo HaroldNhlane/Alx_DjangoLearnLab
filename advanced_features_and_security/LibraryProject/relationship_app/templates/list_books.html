@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Books</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Books Available:</h1>
+    {% if books %}
+        <ul>
+            {% for book in books %}
+            <li><strong>{{ book.title }}</strong> by {{ book.author.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No books found in the database.</p>
+    {% endif %}
+    <p><a href="/admin/">Go to Django Admin to add data</a></p>
+</body>
+</html>

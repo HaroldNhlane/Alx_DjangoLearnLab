@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Details: {{ book.title }}</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p><strong>Author:</strong> {{ book.author.name }}</p>
+    <p><strong>Published Date:</strong> {{ book.published_date }}</p>
+    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+    <p><strong>Summary:</strong> {{ book.summary }}</p>
+
+    <p><a href="{% url 'relationship_app:book_list' %}">Back to Book List</a></p>
+    <p><a href="{% url 'relationship_app:edit_book' pk=book.pk %}">Edit This Book</a></p>
+    <p><a href="{% url 'relationship_app:delete_book' pk=book.pk %}">Delete This Book</a></p>
+
+</body>
+</html>
