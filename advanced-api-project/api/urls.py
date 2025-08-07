@@ -1,15 +1,12 @@
 # api/urls.py
 
 from django.urls import path
-from .views import BookListCreateView, BookRetrieveUpdateDestroyView
+from .views import BookListView, BookDetailView, BookCreateView, BookUpdateView, BookDeleteView
 
 urlpatterns = [
-    # This URL maps to the list and create view.
-    # It will handle GET (list all books) and POST (create a new book) requests.
-    path('books/', BookListCreateView.as_view(), name='book-list-create'),
-
-    # This URL maps to the retrieve, update, and destroy view.
-    # The <int:pk> part is a URL parameter that captures the primary key of the book.
-    # It will handle GET (retrieve), PUT/PATCH (update), and DELETE (delete) requests.
-    path('books/<int:pk>/', BookRetrieveUpdateDestroyView.as_view(), name='book-retrieve-update-destroy'),
+    path('books/', BookListView.as_view(), name='book-list'),
+    path('books/create/', BookCreateView.as_view(), name='book-create'),
+    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
+    path('books/<int:pk>/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/<int:pk>/delete/', BookDeleteView.as_view(), name='book-delete'),
 ]
