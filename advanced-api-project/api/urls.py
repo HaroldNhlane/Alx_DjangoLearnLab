@@ -1,12 +1,13 @@
 from django.urls import path
-from .views import book_list, book_create, book_retrieve, book_update, book_delete
+from .views import BookListView, BookCreateView, BookDetailView, BookUpdateView, BookDeleteView
 
 urlpatterns = [
-    path('books/', book_list, name='book-list'),
-    path('books/create/', book_create, name='book-create'),
-    path('books/<int:pk>/', book_retrieve, name='book-retrieve'),
+    # Book list and create often share a URL
+    path('books/', BookListView.as_view(), name='book-list'),
+    path('books/create/', BookCreateView.as_view(), name='book-create'),
     
-    # Modified endpoints without <int:pk> in path
-    path('books/update/', book_update, name='book-update'),  # Now matches expected format
-    path('books/delete/', book_delete, name='book-delete'),  # Now matches expected format
+    # Detail, update, and delete all need a primary key
+    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
+    path('books/<int:pk>/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/<int:pk>/delete/', BookDeleteView.as_view(), name='book-delete'),
 ]
