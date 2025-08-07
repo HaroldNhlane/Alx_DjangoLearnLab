@@ -1,36 +1,23 @@
 # api/views.py
 
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import generics
-from rest_framework import permissions
 from .models import Book
 from .serializers import BookSerializer
 
-# Handles retrieving a list of all books (GET request)
-class BookListView(generics.ListAPIView):
+class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allows read for anyone, write for authenticated
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)  # Set owner to current user
 
-# Handles retrieving a single book (GET request for a specific book ID)
-class BookDetailView(generics.RetrieveAPIView):
+class BookRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-# Handles creating a new book (POST request)
-class BookCreateView(generics.CreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated] # Note: This must be authenticated to create a new object
-
-# Handles updating an existing book (PUT/PATCH requests)
-class BookUpdateView(generics.UpdateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-# Handles deleting a single book (DELETE request)
-class BookDeleteView(generics.DestroyAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Requires authentication for all operations
+    
+    def get_queryset(self):
+        # Optional: Filter to only show user's own books
+        return self.queryset.filter(owner=self.request.user)
