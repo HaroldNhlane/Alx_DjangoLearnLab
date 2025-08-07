@@ -1,7 +1,7 @@
 # api/views.py
 
 from rest_framework import generics
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Book
 from .serializers import BookSerializer
 
@@ -9,28 +9,28 @@ from .serializers import BookSerializer
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 # Handles retrieving a single book (GET request for a specific book ID)
 class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 # Handles creating a new book (POST request)
 class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can create
+    permission_classes = [IsAuthenticated]
 
 # Handles updating an existing book (PUT/PATCH requests)
 class BookUpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can update
+    permission_classes = [IsAuthenticated]
 
 # Handles deleting a single book (DELETE request)
 class BookDeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can delete
+    permission_classes = [IsAuthenticated]
