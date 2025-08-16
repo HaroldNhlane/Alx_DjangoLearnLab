@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <p class="card-text">{{ comment.content }}</p>
                     <div class="d-flex justify-content-between">
-                        <small class="text-muted">By {{ comment.author }} on {{ comment.created_at|date:"F d, Y" }}</small>
+                        <small class="text-muted">By {{ object.author }} on {{ object.published_date|date:"F d, Y" }}</small>
                         {% if comment.author == user %}
                             <div>
                                 <a class="btn btn-link p-0" href="{% url 'comment-update' comment.id %}">Edit</a>
