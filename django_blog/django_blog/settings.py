@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'django_blog',      # Replace with your PostgreSQL database name
         'USER': 'postgres',          # Replace with your PostgreSQL username
-        'PASSWORD': 'xolani',      # Replace with your PostgreSQL password
+        'PASSWORD': 'xolani0383',      # Replace with your PostgreSQL password
         'HOST': 'localhost',               # Or the IP address of your PostgreSQL server
         'PORT': '5432',                    # PostgreSQL's default port
     }
@@ -129,3 +129,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'profile'
+# Custom settings for our blog app
+LOGIN_REDIRECT_URL = 'posts'
+LOGIN_URL = 'login'
