@@ -1,16 +1,52 @@
 {% extends "blog/base.html" %}
 {% block content %}
-    <article>
-        <h1>{{ post.title }}</h1>
-        <p>Published on: {{ post.published_date }} by {{ post.author }}</p>
-        {% if post.author == user %}
-            <div>
-                <a href="{% url 'post-update' post.pk %}">Edit Post</a>
-                <a href="{% url 'post-delete' post.pk %}">Delete Post</a>
+    <article class="media content-section">
+        <div class="media-body">
+            <h2 class="article-title">{{ object.title }}</h2>
+            <p class="article-content">{{ object.content }}</p>
+            <div class="article-metadata">
+                <small class="text-muted">By {{ object.author }} on {{ object.date_posted|date:"F d, Y" }}</small>
+                {% if object.author == user %}
+                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Edit</a>
+                    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+                {% endif %}
             </div>
-        {% endif %}
-        <div>
-            {{ post.content|safe }}
         </div>
     </article>
-{% endblock %}
+
+    <div class="comments-section mt-5">
+        <h3>Comments ({{ comments.count }})</h3>
+        {% if user.is_authenticated %}
+            <div class="card p-3 my-3">
+                <form method="POST" action="{% url 'add-comment' object.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.content.id_for_label }}">Add a Comment:</label>
+                        {{ form.content }}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-muted">You must be <a href="{% url 'login' %}">logged in</a> to post a comment.</p>
+        {% endif %}
+
+        {% for comment in comments %}
+            <div class="card my-3">
+                <div class="card-body">
+                    <p class="card-text">{{ comment.content }}</p>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">By {{ comment.author }} on {{ comment.created_at|date:"F d, Y" }}</small>
+                        {% if comment.author == user %}
+                            <div>
+                                <a class="btn btn-link p-0" href="{% url 'comment-update' comment.id %}">Edit</a>
+                                |
+                                <a class="btn btn-link p-0" href="{% url 'comment-delete' comment.id %}">Delete</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
