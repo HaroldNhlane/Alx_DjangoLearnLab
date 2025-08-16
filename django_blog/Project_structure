@@ -1,0 +1,21 @@
+django_blog/
+├── blog/
+│   ├── migrations/
+│   ├── static/
+│   │   └── blog/
+│   │       ├── css/
+│   │       └── js/
+│   ├── templates/
+│   │   └── blog/
+│   │       └── index.html
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── django_blog/
+│   ├── __init__.py
+│   ├── settings.py
+│   └── ...
+└── manage.py
