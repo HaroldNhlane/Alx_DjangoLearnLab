@@ -9,6 +9,8 @@ from django.urls import reverse_lazy, reverse
 from .forms import UserRegisterForm, UserUpdateForm, PostForm, CommentForm
 from .models import Post, Comment
 from django.utils import timezone
+from django.db.models import Q # Add this import for search queries
+from itertools import chain
 
 # --- Blog Post Views (CRUD) ---
 class PostListView(ListView):
@@ -99,6 +101,20 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
+
+# --- Search View ---
+def search_posts(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    else:
+        posts = Post.objects.none()
+    
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
 
 # --- Static / Auth Views ---
 def register(request):
