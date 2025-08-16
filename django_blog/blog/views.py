@@ -9,8 +9,8 @@ from django.urls import reverse_lazy, reverse
 from .forms import UserRegisterForm, UserUpdateForm, PostForm, CommentForm
 from .models import Post, Comment
 from django.utils import timezone
-from django.db.models import Q # Add this import for search queries
-from itertools import chain
+from django.db.models import Q 
+from taggit.models import Tag # Add this import
 
 # --- Blog Post Views (CRUD) ---
 class PostListView(ListView):
@@ -102,7 +102,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
 
-# --- Search View ---
+# --- Search and Tag Views ---
 def search_posts(request):
     query = request.GET.get('q')
     if query:
@@ -115,6 +115,21 @@ def search_posts(request):
         posts = Post.objects.none()
     
     return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag_slug = self.kwargs['tag_slug']
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        return Post.objects.filter(tags__in=[tag]).order_by('-date_posted')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag_name'] = self.kwargs['tag_slug']
+        return context
 
 # --- Static / Auth Views ---
 def register(request):
