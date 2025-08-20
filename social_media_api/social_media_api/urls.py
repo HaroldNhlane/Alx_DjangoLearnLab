@@ -16,14 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# Import the home view from your accounts app
-from accounts import views
+from accounts import views as accounts_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # This path handles the root URL '/' and points to the home view
-    path('', views.home, name='home'),
-    # This path is for all your API endpoints
+    # Homepage view
+    path('', accounts_views.home, name='home'),
+    # Accounts and authentication API routes
     path('api/accounts/', include('accounts.urls')),
+    # Posts and comments API routes
+    path('api/', include('posts.urls')),
 ]
+
 
