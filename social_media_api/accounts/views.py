@@ -2,10 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from django.http import HttpResponse
 from .serializers import UserSerializer, LoginSerializer
+from rest_framework import permissions # Import the entire permissions module
 
 User = get_user_model()
 
@@ -19,7 +19,7 @@ def home(request):
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (AllowAny,)
+    permission_classes = (permissions.AllowAny,)
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -33,7 +33,8 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class LoginView(generics.GenericAPIView):
-    permission_classes = (AllowAny,)
+    queryset = User.objects.all()
+    permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -46,16 +47,14 @@ class LoginView(generics.GenericAPIView):
             "token": token.key
         })
 
-
 class FollowUserView(APIView):
     """
     Allows an authenticated user to follow or unfollow another user.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, pk):
         try:
-            # This line references CustomUser.objects.all() via the get_user_model() function.
             target_user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
