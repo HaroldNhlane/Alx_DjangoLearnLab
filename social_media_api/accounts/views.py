@@ -2,13 +2,14 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny
-from django.http import HttpResponse # Import HttpResponse here
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
+from django.http import HttpResponse
 from .serializers import UserSerializer, LoginSerializer
 
 User = get_user_model()
 
-# This new view handles requests to the root URL
+# This view handles requests to the root URL
 def home(request):
     """
     A simple view that returns an HTTP response for the home page.
@@ -44,3 +45,30 @@ class LoginView(generics.GenericAPIView):
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": token.key
         })
+
+
+class FollowUserView(APIView):
+    """
+    Allows an authenticated user to follow or unfollow another user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            target_user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        current_user = request.user
+
+        if current_user == target_user:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Toggle follow status
+        if current_user.following.filter(pk=target_user.pk).exists():
+            current_user.following.remove(target_user)
+            return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
+        else:
+            current_user.following.add(target_user)
+            return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
+
