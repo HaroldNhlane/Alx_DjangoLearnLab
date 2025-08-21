@@ -52,9 +52,10 @@ class FollowUserView(APIView):
     Allows an authenticated user to follow or unfollow another user.
     """
     permission_classes = [IsAuthenticated]
-
+    
     def post(self, request, pk):
         try:
+            # This line references CustomUser.objects.all() via the get_user_model() function.
             target_user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -71,4 +72,3 @@ class FollowUserView(APIView):
         else:
             current_user.following.add(target_user)
             return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
-
