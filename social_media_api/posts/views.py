@@ -5,6 +5,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -50,7 +53,8 @@ class UserFeedView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Get the list of users the current user is following
+        # Get the list of users the current user is following.
+        # This uses the related_name 'following'.
         following_users = self.request.user.following.all()
         # Return posts from those users, ordered by creation date
         return Post.objects.filter(author__in=following_users).order_by('-created_at')

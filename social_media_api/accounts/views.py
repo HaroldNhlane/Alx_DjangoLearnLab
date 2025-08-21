@@ -2,10 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from django.http import HttpResponse
 from .serializers import UserSerializer, LoginSerializer
-from rest_framework import permissions # Import the entire permissions module
 
 User = get_user_model()
 
@@ -19,7 +19,7 @@ def home(request):
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (AllowAny,)
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -33,8 +33,7 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class LoginView(generics.GenericAPIView):
-    queryset = User.objects.all()
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -51,8 +50,8 @@ class FollowUserView(APIView):
     """
     Allows an authenticated user to follow or unfollow another user.
     """
-    permission_classes = [permissions.IsAuthenticated]
-    
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, pk):
         try:
             target_user = User.objects.get(pk=pk)
@@ -64,10 +63,11 @@ class FollowUserView(APIView):
         if current_user == target_user:
             return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Toggle follow status
-        if current_user.following.filter(pk=target_user.pk).exists():
-            current_user.following.remove(target_user)
+        # Check if the current user is already following the target user.
+        # This uses the related_name 'following' to get the list of users followed by the current user.
+        if target_user.followers.filter(pk=current_user.pk).exists():
+            target_user.followers.remove(current_user)
             return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
         else:
-            current_user.following.add(target_user)
+            target_user.followers.add(current_user)
             return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
