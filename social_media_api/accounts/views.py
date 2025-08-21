@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from django.http import HttpResponse
+# Import your serializers from the accounts app
 from .serializers import UserSerializer, LoginSerializer
 
 User = get_user_model()
@@ -63,11 +64,10 @@ class FollowUserView(APIView):
         if current_user == target_user:
             return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if the current user is already following the target user.
-        # This uses the related_name 'following' to get the list of users followed by the current user.
-        if target_user.followers.filter(pk=current_user.pk).exists():
-            target_user.followers.remove(current_user)
+        # Corrected logic
+        if current_user.following.filter(pk=target_user.pk).exists():
+            current_user.following.remove(target_user)
             return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
         else:
-            target_user.followers.add(current_user)
+            current_user.following.add(target_user)
             return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
