@@ -142,7 +142,11 @@ REST_FRAMEWORK = {
 
 # Redirects all HTTP traffic to HTTPS.
 # Requires your hosting provider to handle SSL.
+
+# SECURITY HEADERS
 SECURE_SSL_REDIRECT = True
+SECURE_BROWSER_XSS_FILTER = True # Add this line
+# ...
 
 # Prevents the browser from trying to guess content types.
 SECURE_CONTENT_TYPE_NOSNIFF = True
