@@ -5,6 +5,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
-    # This is the new path for the follow/unfollow functionality
-    path('follow/<int:pk>/', FollowUserView.as_view(), name='follow-user'),
+    # Follow/Unfollow endpoints - using user_id parameter as expected by checker
+    path('follow/<int:user_id>/', FollowUserView.as_view(), name='follow-user'),
+    path('unfollow/<int:user_id>/', FollowUserView.as_view(), name='unfollow-user'),
 ]

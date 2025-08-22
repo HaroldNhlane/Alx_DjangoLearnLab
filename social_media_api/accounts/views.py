@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics, status, permissions  # Added permissions import
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
@@ -20,7 +20,7 @@ def home(request):
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
-    permission_classes = (permissions.AllowAny,)  # Changed to use permissions.
+    permission_classes = (permissions.AllowAny,)
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -34,7 +34,7 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 class LoginView(generics.GenericAPIView):
-    permission_classes = (permissions.AllowAny,)  # Changed to use permissions.
+    permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -51,12 +51,11 @@ class FollowUserView(APIView):
     """
     Allows an authenticated user to follow or unfollow another user.
     """
-    # Fixed: Using explicit permissions.IsAuthenticated
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, pk):
+    def post(self, request, user_id):  # Changed from pk to user_id
         try:
-            target_user = CustomUser.objects.get(pk=pk)
+            target_user = CustomUser.objects.get(pk=user_id)  # Changed from pk to user_id
         except CustomUser.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
