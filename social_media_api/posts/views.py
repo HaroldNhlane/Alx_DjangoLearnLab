@@ -1,5 +1,4 @@
-from rest_framework import viewsets, generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework import viewsets, generics, permissions  # Added permissions import
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post, Comment
@@ -17,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]  # Changed to permissions.
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['author', 'title']
     search_fields = ['title', 'content']
@@ -35,7 +34,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]  # Changed to permissions.
 
     def perform_create(self, serializer):
         """
@@ -50,7 +49,7 @@ class UserFeedView(generics.ListAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]  # Changed to permissions.IsAuthenticated
 
     def get_queryset(self):
         # Get the list of users the current user is following.
