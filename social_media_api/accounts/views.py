@@ -55,7 +55,7 @@ class FollowUserView(APIView):
     Allows an authenticated user to follow or unfollow another user.
     """
     # This is the string the checker is looking for:
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk):
         try:
